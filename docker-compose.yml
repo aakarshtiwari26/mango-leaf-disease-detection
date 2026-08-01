@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  ai-service:
+    build:
+      context: ./ai-service
+    restart: unless-stopped
+    env_file:
+      - ./ai-service/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-service/model.keras:/app/model.keras
+      - ./ai-service/uploads:/app/uploads
+
+  server:
+    build:
+      context: ./server
+    restart: unless-stopped
+    env_file:
+      - ./server/.env
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/mango_leaf_disease_detection
+      AI_SERVICE_URL: http://ai-service:8000
+      CLIENT_URL: http://localhost
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+      - ai-service
+    volumes:
+      - ./server/uploads:/app/uploads
+      - ./server/reports:/app/reports
+
+  client:
+    build:
+      context: ./client
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+volumes:
+  mongo_data:

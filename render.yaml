@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: mango-leaf-server
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_URL
+        sync: false
+      - key: AI_SERVICE_URL
+        sync: false
+      - key: MAX_FILE_SIZE
+        value: 5242880
+      - key: UPLOAD_DIR
+        value: uploads
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX
+        value: 100
+
+  - type: web
+    name: mango-leaf-ai
+    runtime: docker
+    rootDir: ai-service
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: APP_TITLE
+        value: Mango Leaf Disease Detection AI Service
+      - key: MODEL_PATH
+        value: ./model.keras
+      - key: IMAGE_SIZE
+        value: 299
+      - key: PORT
+        value: 8000
