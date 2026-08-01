@@ -37,7 +37,8 @@ export function createApp() {
 
         if (
           explicitOrigins.includes(origin) ||
-          /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+          /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin) ||
+          /^https:\/\/[\w-]+\.vercel\.app$/.test(origin)
         ) {
           return callback(null, true);
         }
