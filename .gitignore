@@ -17,4 +17,5 @@ __pycache__
 artifacts
 .vite
 .runtime
-.claude/settings.local.json
+.claude/
+.vercel
