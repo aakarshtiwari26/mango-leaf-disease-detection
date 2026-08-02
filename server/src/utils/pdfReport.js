@@ -1,21 +1,10 @@
-import fs from "fs";
-import path from "path";
 import PDFDocument from "pdfkit";
 
-const reportsDir = path.resolve("reports");
-
-if (!fs.existsSync(reportsDir)) {
-  fs.mkdirSync(reportsDir, { recursive: true });
-}
-
-export function createPredictionReport({ prediction, disease, user }) {
+export function writePredictionReport({ prediction, disease, user }, outputStream) {
   return new Promise((resolve, reject) => {
-    const fileName = `prediction-${prediction._id}.pdf`;
-    const filePath = path.join(reportsDir, fileName);
-    const stream = fs.createWriteStream(filePath);
     const doc = new PDFDocument({ margin: 40 });
 
-    doc.pipe(stream);
+    doc.pipe(outputStream);
     doc
       .fontSize(22)
       .text("Mango Leaf Disease Detection Report", { align: "center" });
@@ -36,7 +25,7 @@ export function createPredictionReport({ prediction, disease, user }) {
     doc.text(`Prediction Time: ${prediction.predictionTimeMs} ms`);
     doc.end();
 
-    stream.on("finish", () => resolve(filePath));
-    stream.on("error", reject);
+    outputStream.on("finish", resolve);
+    outputStream.on("error", reject);
   });
 }

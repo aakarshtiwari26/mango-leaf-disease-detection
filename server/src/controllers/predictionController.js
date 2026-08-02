@@ -1,10 +1,9 @@
 import fs from "fs/promises";
-import path from "path";
 import Prediction from "../models/Prediction.js";
 import Disease from "../models/Disease.js";
 import { asyncHandler } from "../middleware/asyncHandler.js";
 import { aiServiceClient } from "../config/aiService.js";
-import { createPredictionReport } from "../utils/pdfReport.js";
+import { writePredictionReport } from "../utils/pdfReport.js";
 
 function buildImageUrl(req, filename) {
   return `/uploads/${filename}`;
@@ -52,15 +51,6 @@ export const createPrediction = asyncHandler(async (req, res) => {
     prevention: payload.prevention,
   });
 
-  const reportPath = await createPredictionReport({
-    prediction,
-    disease,
-    user: req.user,
-  });
-
-  prediction.reportPath = reportPath;
-  await prediction.save();
-
   res.status(201).json({
     message: "Prediction completed successfully",
     prediction: {
@@ -77,9 +67,7 @@ export const createPrediction = asyncHandler(async (req, res) => {
       probabilities: prediction.probabilities,
       imageUrl: prediction.imageUrl,
       previewUrl: prediction.previewUrl,
-      reportUrl: prediction.reportPath
-        ? `/api/predictions/${prediction._id}/report`
-        : "",
+      reportUrl: `/api/predictions/${prediction._id}/report`,
     },
   });
 });
@@ -90,9 +78,18 @@ export const downloadPredictionReport = asyncHandler(async (req, res) => {
     user: req.user._id,
   }).populate("disease");
 
-  if (!prediction || !prediction.reportPath) {
+  if (!prediction) {
     return res.status(404).json({ message: "Report not found" });
   }
 
-  res.download(path.resolve(prediction.reportPath));
+  res.setHeader("Content-Type", "application/pdf");
+  res.setHeader(
+    "Content-Disposition",
+    `attachment; filename="prediction-${prediction._id}.pdf"`,
+  );
+
+  await writePredictionReport(
+    { prediction, disease: prediction.disease, user: req.user },
+    res,
+  );
 });

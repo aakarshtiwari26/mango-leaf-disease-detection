@@ -19,8 +19,14 @@ export function AuthProvider({ children }) {
       try {
         const { data } = await api.get("/profile");
         setUser(data.user);
-      } catch {
-        localStorage.removeItem("mango_leaf_token");
+      } catch (error) {
+        // Only clear the token on a genuine auth rejection. A transient
+        // network error or cold-start 502/503 from the free-tier host
+        // isn't proof the token is invalid, and clearing it here forces
+        // the user to log in again for no reason.
+        if (error.response?.status === 401) {
+          localStorage.removeItem("mango_leaf_token");
+        }
       } finally {
         setLoading(false);
       }

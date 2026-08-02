@@ -25,7 +25,6 @@ const predictionSchema = new mongoose.Schema(
     symptoms: [{ type: String, required: true }],
     causes: [{ type: String, required: true }],
     prevention: { type: String, required: true },
-    reportPath: { type: String, default: "" },
   },
   { timestamps: true },
 );
