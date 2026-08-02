@@ -15,6 +15,7 @@ __pycache__
 *.keras
 !ai-service/model.keras
 artifacts
+ai-service/original_dataset/
 .vite
 .runtime
 .claude/

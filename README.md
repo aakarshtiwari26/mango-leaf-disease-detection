@@ -188,12 +188,10 @@ Place images in the folder structure below and run `python -m app.train` from `a
 dataset/
   Healthy/
   Anthracnose/
-  Bacterial_Canker/
   Die_Back/
   Gall_Midge/
-  Powdery_Mildew/
-  Sooty_Mold/
-  Cutting_Weevil/
+  Leaf_Webber/
+  Leaf_Blight/
 ```
 
 ## Ports

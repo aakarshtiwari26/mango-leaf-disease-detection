@@ -28,8 +28,8 @@ export default function Footer() {
             Disease List
           </h4>
           <p className="mt-4 text-sm leading-6 text-white/70">
-            Healthy, Anthracnose, Bacterial Canker, Cutting Weevil, Die Back,
-            Gall Midge, Powdery Mildew, and Sooty Mold.
+            Healthy, Anthracnose, Die Back, Gall Midge, Leaf Webber, and Leaf
+            Blight.
           </p>
         </div>
       </div>

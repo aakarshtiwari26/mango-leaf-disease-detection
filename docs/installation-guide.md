@@ -49,10 +49,8 @@ uvicorn app:app --reload --port 8000
 ai-service/dataset/
   Healthy/
   Anthracnose/
-  Bacterial_Canker/
-  Cutting_Weevil/
   Die_Back/
   Gall_Midge/
-  Powdery_Mildew/
-  Sooty_Mold/
+  Leaf_Webber/
+  Leaf_Blight/
 ```
