@@ -17,13 +17,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MODEL_PATH = os.getenv("MODEL_PATH", "./model.keras")
+MODEL_PATH = os.getenv("MODEL_PATH", "./model.tflite")
 IMAGE_SIZE = int(os.getenv("IMAGE_SIZE", "299"))
 predictor = MangoDiseasePredictor(MODEL_PATH, IMAGE_SIZE)
 
 if not os.path.exists(MODEL_PATH):
     print(
-        "model.keras not found. Train it with: cd ai-service && .venv/bin/python -m app.train"
+        "model.tflite not found. Train it with: cd ai-service && .venv/bin/python -m app.train"
     )
 
 

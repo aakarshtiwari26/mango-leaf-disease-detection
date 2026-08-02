@@ -38,7 +38,7 @@ services:
       - key: APP_TITLE
         value: Mango Leaf Disease Detection AI Service
       - key: MODEL_PATH
-        value: ./model.keras
+        value: ./model.tflite
       - key: IMAGE_SIZE
         value: 299
       - key: PORT

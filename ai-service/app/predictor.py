@@ -5,7 +5,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 from PIL import Image
-from tensorflow.keras.models import load_model
+from ai_edge_litert.interpreter import Interpreter
 
 from .disease_data import DISEASE_METADATA
 
@@ -27,7 +27,16 @@ class MangoDiseasePredictor:
     def __init__(self, model_path: str, image_size: int = 299):
         self.model_path = Path(model_path)
         self.image_size = image_size
-        self.model = load_model(self.model_path) if self.model_path.exists() else None
+        self.interpreter = None
+        self.input_index = None
+        self.output_index = None
+
+        if self.model_path.exists():
+            self.interpreter = Interpreter(model_path=str(self.model_path))
+            self.interpreter.allocate_tensors()
+            self.input_index = self.interpreter.get_input_details()[0]["index"]
+            self.output_index = self.interpreter.get_output_details()[0]["index"]
+
         self.class_names = self._load_class_names()
 
     def _load_class_names(self):
@@ -44,11 +53,14 @@ class MangoDiseasePredictor:
         return np.expand_dims(image, axis=0)
 
     def predict(self, image_bytes: bytes):
-        if self.model is None:
-            raise RuntimeError("Model file not found. Train and save model.keras first.")
+        if self.interpreter is None:
+            raise RuntimeError("Model file not found. Train and save model.tflite first.")
 
         processed = self.preprocess(image_bytes)
-        predictions = self.model.predict(processed, verbose=0)[0]
+        self.interpreter.set_tensor(self.input_index, processed)
+        self.interpreter.invoke()
+        predictions = self.interpreter.get_tensor(self.output_index)[0]
+
         top_index = int(np.argmax(predictions))
         disease_name = self.class_names[top_index]
         confidence = float(predictions[top_index])
