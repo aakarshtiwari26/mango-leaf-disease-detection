@@ -44,6 +44,13 @@ export default function UploadLeaf() {
     }
 
     setLoading(true);
+    const wakingToast = setTimeout(() => {
+      toast("The AI service is waking up, this can take up to a minute...", {
+        icon: "⏳",
+        duration: 8000,
+      });
+    }, 6000);
+
     try {
       const formData = new FormData();
       formData.append("image", file);
@@ -59,6 +66,7 @@ export default function UploadLeaf() {
     } catch (error) {
       toast.error(error.response?.data?.message || "Prediction failed");
     } finally {
+      clearTimeout(wakingToast);
       setLoading(false);
     }
   };
