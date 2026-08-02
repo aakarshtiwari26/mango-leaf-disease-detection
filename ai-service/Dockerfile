@@ -14,7 +14,8 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
-COPY model.keras ./model.keras
+COPY model.tflite ./model.tflite
+COPY class_indices.json ./class_indices.json
 
 EXPOSE 8000
 

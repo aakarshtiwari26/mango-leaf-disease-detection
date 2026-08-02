@@ -130,6 +130,18 @@ def train_model(
     plt.tight_layout()
     plt.savefig(artifacts_dir / "confusion_matrix.png", dpi=200)
 
+    # The Docker-deployed ai-service serves predictions from a TFLite model
+    # (much lighter runtime/memory footprint than full TensorFlow -- see
+    # predictor.py), so export one alongside the Keras checkpoint.
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    converter.target_spec.supported_types = [tf.float16]
+    tflite_model = converter.convert()
+
+    tflite_path = model_path.with_suffix(".tflite")
+    tflite_path.write_bytes(tflite_model)
+    print(f"TFLite model saved to {tflite_path}")
+
     print(f"Model saved to {model_path}")
     print(report)
 
