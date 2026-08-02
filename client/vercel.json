@@ -1,5 +1,5 @@
 {
-  "installCommand": "rm -rf node_modules package-lock.json && npm install",
+  "installCommand": "cd .. && rm -rf node_modules package-lock.json client/node_modules client/package-lock.json server/node_modules server/package-lock.json && npm install",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
