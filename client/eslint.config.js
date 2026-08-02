@@ -15,6 +15,8 @@ export default [
         console: "readonly",
         window: "readonly",
         document: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
         localStorage: "readonly",
         sessionStorage: "readonly",
         Blob: "readonly",

@@ -1,13 +1,27 @@
+import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import ProbabilityChart from "../components/ProbabilityChart";
 import SectionHeading from "../components/SectionHeading";
 import { downloadPredictionReport } from "../services/api";
 
 export default function PredictionResult() {
   const location = useLocation();
+  const [downloading, setDownloading] = useState(false);
   const prediction =
     location.state?.prediction ||
     JSON.parse(localStorage.getItem("mango_leaf_last_prediction") || "null");
+
+  async function handleDownloadReport() {
+    setDownloading(true);
+    try {
+      await downloadPredictionReport(prediction.id);
+    } catch {
+      toast.error("Couldn't download the report. Please try again.");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   if (!prediction) {
     return (
@@ -91,13 +105,22 @@ export default function PredictionResult() {
                 title="Prediction Time"
                 text={`${prediction.predictionTimeMs} ms`}
               />
-              <a
-                href={prediction.reportUrl || "#"}
-                className="rounded-2xl bg-leaf-400 px-5 py-3 text-center font-bold text-slate-950"
+              <button
+                type="button"
+                onClick={handleDownloadReport}
+                disabled={downloading}
+                className="rounded-2xl bg-leaf-400 px-5 py-3 text-center font-bold text-slate-950 disabled:opacity-60"
               >
-                Download Prediction Report PDF
-              </a>
+                {downloading ? "Preparing PDF…" : "Download Prediction Report PDF"}
+              </button>
             </div>
+
+            <Link
+              to="/upload"
+              className="inline-flex rounded-2xl bg-mango-300 px-5 py-3 font-bold text-slate-950"
+            >
+              Predict Another Leaf
+            </Link>
 
             <div>
               <p className="mb-3 text-sm uppercase tracking-[0.24em] text-white/45">
