@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import { createApp } from "./app.js";
-import { seedDiseasesIfNeeded } from "./seed/diseaseSeeder.js";
+import { syncDiseases } from "./seed/diseaseSeeder.js";
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ const HOST = process.env.HOST || "0.0.0.0";
 
 async function startServer() {
   await connectDB();
-  await seedDiseasesIfNeeded();
+  await syncDiseases();
 
   const app = createApp();
   const listen = (port) => {
