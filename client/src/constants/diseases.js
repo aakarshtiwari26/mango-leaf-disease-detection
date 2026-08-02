@@ -6,16 +6,6 @@ export const diseases = [
     short: "Fungal lesions and leaf blight.",
   },
   {
-    name: "Bacterial Canker",
-    slug: "bacterial-canker",
-    short: "Water-soaked cankers and lesions.",
-  },
-  {
-    name: "Cutting Weevil",
-    slug: "cutting-weevil",
-    short: "Cut and chewed leaf margins.",
-  },
-  {
     name: "Die Back",
     slug: "die-back",
     short: "Branch and shoot drying from tips.",
@@ -26,13 +16,13 @@ export const diseases = [
     short: "Swollen and distorted young leaves.",
   },
   {
-    name: "Powdery Mildew",
-    slug: "powdery-mildew",
-    short: "White powder-like fungal growth.",
+    name: "Leaf Webber",
+    slug: "leaf-webber",
+    short: "Webbed and skeletonized leaves.",
   },
   {
-    name: "Sooty Mold",
-    slug: "sooty-mold",
-    short: "Black soot coating on leaves.",
+    name: "Leaf Blight",
+    slug: "leaf-blight",
+    short: "Large necrotic brown patches.",
   },
 ];

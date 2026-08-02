@@ -19,27 +19,6 @@ export const diseaseCatalog = [
     description: "A fungal disease that causes black lesions and leaf damage.",
   },
   {
-    name: "Bacterial Canker",
-    slug: "bacterial-canker",
-    symptoms: ["Water-soaked lesions", "Cankers along leaf veins and stems"],
-    causes: [
-      "Bacterial infection through wounds",
-      "Rain splash and contaminated tools",
-    ],
-    treatment: "Remove infected parts and disinfect tools after use.",
-    prevention: "Use clean pruning tools and avoid unnecessary wounds.",
-    description: "A bacterial infection that damages leaves, stems, and fruit.",
-  },
-  {
-    name: "Cutting Weevil",
-    slug: "cutting-weevil",
-    symptoms: ["Irregular cuts on leaves", "Chewed margins and holes"],
-    causes: ["Adult weevil feeding", "Poor orchard sanitation"],
-    treatment: "Use insect control measures and remove damaged foliage.",
-    prevention: "Keep the orchard clean and monitor new flushes closely.",
-    description: "An insect pest that cuts and damages mango leaves.",
-  },
-  {
     name: "Die Back",
     slug: "die-back",
     symptoms: ["Drying from tip to base", "Twigs and shoots withered"],
@@ -59,22 +38,38 @@ export const diseaseCatalog = [
     description: "An insect pest that induces galls and leaf distortion.",
   },
   {
-    name: "Powdery Mildew",
-    slug: "powdery-mildew",
-    symptoms: ["White powdery coating", "Stunted leaf growth and curling"],
-    causes: ["Fungal spores in cool dry nights", "Crowded canopy"],
-    treatment: "Apply sulfur or fungicide sprays at early infection stage.",
-    prevention: "Prune for airflow and avoid excessive shade.",
-    description: "A fungal disease characterized by white powdery growth.",
+    name: "Leaf Webber",
+    slug: "leaf-webber",
+    symptoms: [
+      "Leaves webbed together with silk strands",
+      "Skeletonized or chewed leaf tissue under the webbing",
+    ],
+    causes: [
+      "Larvae of the mango leaf webber moth feeding and spinning webs",
+      "Dense canopy sheltering larvae",
+    ],
+    treatment:
+      "Prune and destroy webbed leaves, then apply an appropriate contact or systemic insecticide.",
+    prevention:
+      "Prune for canopy airflow, remove webbed nests early, and monitor new flushes during peak moth activity.",
+    description: "An insect pest that webs leaves together and skeletonizes them.",
   },
   {
-    name: "Sooty Mold",
-    slug: "sooty-mold",
-    symptoms: ["Black soot-like coating on leaves", "Reduced photosynthesis"],
-    causes: ["Honeydew from sap-sucking insects", "High humidity"],
-    treatment: "Control insect infestation and wash leaves when practical.",
-    prevention: "Manage aphids and scale insects early.",
-    description: "A fungal growth that develops on honeydew deposits.",
+    name: "Leaf Blight",
+    slug: "leaf-blight",
+    symptoms: [
+      "Large irregular brown or tan necrotic patches",
+      "Leaf margins drying and curling",
+    ],
+    causes: [
+      "Fungal or bacterial pathogens favored by prolonged leaf wetness",
+      "Poor drainage and overcrowded planting",
+    ],
+    treatment:
+      "Remove and destroy blighted leaves, and apply a copper-based or systemic fungicide.",
+    prevention:
+      "Improve air circulation, avoid overhead irrigation, and remove fallen infected leaves from the orchard floor.",
+    description: "A disease causing large necrotic patches across the leaf blade.",
   },
 ];
 

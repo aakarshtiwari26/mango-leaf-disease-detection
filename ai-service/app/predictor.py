@@ -15,13 +15,11 @@ from .disease_data import DISEASE_METADATA
 # default behavior of sorting dataset subfolder names alphabetically.
 DEFAULT_CLASS_NAMES = [
     "Anthracnose",
-    "Bacterial Canker",
-    "Cutting Weevil",
     "Die Back",
     "Gall Midge",
     "Healthy",
-    "Powdery Mildew",
-    "Sooty Mold",
+    "Leaf Webber",
+    "Leaf Blight",
 ]
 
 
