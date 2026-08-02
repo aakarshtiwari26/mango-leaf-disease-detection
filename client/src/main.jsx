@@ -14,7 +14,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <BrowserRouter>
           <App />
           <Toaster
-            position="top-right"
+            position="top-center"
+            containerStyle={{ top: 92 }}
             toastOptions={{
               style: {
                 background: "rgba(15, 23, 42, 0.9)",

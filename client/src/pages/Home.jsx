@@ -60,7 +60,7 @@ export default function Home() {
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="glass-card p-5">
-                <div className="text-3xl font-black text-mango-300">8</div>
+                <div className="text-3xl font-black text-mango-300">6</div>
                 <p className="mt-1 text-sm text-white/60">
                   Disease classes supported
                 </p>
