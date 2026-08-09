@@ -207,3 +207,5 @@ dataset/
 - JWT authentication
 - Helmet, CORS, rate limiting, and input sanitization
 - Server-side validation and file type checks
+
+Repo relinked to Vercel on 2026-08-09 after recreating the GitHub repository.
