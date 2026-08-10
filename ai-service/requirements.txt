@@ -1,9 +1,0 @@
-fastapi==0.115.4
-uvicorn[standard]==0.32.0
-python-multipart==0.0.12
-ai-edge-litert==2.1.6
-opencv-python==4.10.0.84
-Pillow==11.0.0
-numpy==1.26.4
-python-dotenv==1.0.1
-aiofiles==24.1.0

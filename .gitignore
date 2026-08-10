@@ -1,22 +1,35 @@
-node_modules
-dist
-build
-**/uploads/*
-!**/uploads/.gitkeep
-reports
-*.log
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Env files (keep the .env.example templates)
 .env
 .env.local
-!.env.example
+.env.*.local
+
+# OS
 .DS_Store
-__pycache__
-*.pyc
-.venv
-*.keras
-!ai-service/model.keras
-artifacts
-ai-service/original_dataset/
-.vite
-.runtime
-.claude/
-.vercel
+
+# IDE
+.vscode/
+.idea/
+
+# Vercel
+.vercel/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Training-time artifacts too large/local to commit — the serving exports in
+# backend/app/ml/ (model.tflite, leaf_gate.tflite, labels.json) ARE committed.
+model-training/*.h5
+model-training/best_head.h5
+model-training/best_finetuned.h5

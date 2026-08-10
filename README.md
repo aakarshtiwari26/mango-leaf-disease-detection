@@ -1,211 +1,212 @@
-# Mango Leaf Disease Detection Using InceptionV3
+# Mango Leaf Disease Detection
 
-Full-stack MERN + AI app for mango leaf disease detection with a React frontend, Express API, FastAPI inference service, PDF reports, and JWT auth.
+A full-stack web app that classifies mango leaf diseases from a photo. Upload an image, get back
+a predicted disease class (or "healthy") with a confidence score, and browse a history of past
+predictions.
 
-## What is included
+The model is Inception V3, fine-tuned via transfer learning on the
+[Mango Leaf Disease Dataset](https://www.kaggle.com/datasets/aryashah2k/mango-leaf-disease-dataset)
+(Kaggle), exported to TensorFlow Lite for lightweight serving. A second, smaller binary classifier
+gates every upload first, so the app doesn't confidently hallucinate a disease label for a photo
+that isn't a mango leaf at all.
 
-- Client: React, Vite, Axios, React Router
-- Server: Express, Mongoose, JWT, Multer, PDF generation
-- AI service: FastAPI, TensorFlow, InceptionV3 prediction pipeline
+## Architecture
 
-## Folder Structure
-
-- `client/` React app
-- `server/` Express API
-- `ai-service/` FastAPI inference service
-- `scripts/` root launch helpers
-
-## Environment Files
-
-The repo now uses real `.env` files:
-
-- `client/.env`
-- `server/.env`
-- `ai-service/.env`
-
-Edit `server/.env` only if you need to point at a different MongoDB or AI service host.
-
-## Setup
-
-1. Install Node dependencies from the repository root:
-
-```bash
-npm install
+```
+┌─────────────┐      HTTPS       ┌──────────────────┐
+│   React +   │ ───────────────▶ │     FastAPI        │
+│    Vite     │ ◀─────────────── │   (Render, Docker)  │
+│  (Vercel)   │   JSON response  └────────┬─────────────┘
+└─────────────┘                            │
+                                            │
+                     ┌──────────────────────┼───────────────────────┐
+                     ▼                      ▼                       ▼
+             ┌───────────────┐   ┌───────────────────┐   ┌───────────────────┐
+             │ Leaf gate      │   │ Inception V3        │   │  MongoDB Atlas      │
+             │ (leaf_gate.    │──▶│ disease classifier  │   │  (motor, async)     │
+             │  tflite)       │   │ (model.tflite)       │   │  prediction history │
+             └───────────────┘   └──────────┬───────────┘   └───────────────────┘
+                                              │
+                                              ▼
+                                     ┌───────────────────┐
+                                     │     ImageKit         │
+                                     │  (uploaded image)     │
+                                     └───────────────────┘
 ```
 
-2. Install Python dependencies for the AI service:
+**Request flow for `POST /predict`:**
+1. Image goes through the leaf-gate binary classifier. If it doesn't look like a mango leaf, the
+   API returns `"status": "rejected"` immediately — nothing is uploaded or saved.
+2. Otherwise the Inception V3 classifier runs. If its top confidence is below the tuned threshold,
+   the request is also rejected rather than returning a low-confidence guess.
+3. Only a confident, gate-passed prediction gets its image uploaded to ImageKit and a document
+   written to MongoDB.
+
+## Tech stack
+
+| Layer | Choice |
+|---|---|
+| Model | Inception V3 (transfer learning, Keras) → TensorFlow Lite for serving |
+| Backend | FastAPI (Python), containerized with Docker |
+| Database | MongoDB Atlas via the async `motor` driver |
+| Image storage | ImageKit (`imagekitio` Python SDK) |
+| Frontend | React + Vite |
+| Deployment | Vercel (frontend), Render (backend, Docker) |
+
+## Repository structure
+
+```
+/mango-leaf-disease-detection
+  /backend
+    /app
+      main.py              # FastAPI app entrypoint
+      config.py             # env var loading (pydantic-settings)
+      database.py            # MongoDB (motor) connection
+      /models
+        prediction.py         # Pydantic response/document schemas
+      /routers
+        predict.py           # POST /predict
+        history.py           # GET /history
+      /services
+        inference.py          # loads TFLite models, runs the gate + classifier pipeline
+        imagekit_service.py    # uploads image, returns URL
+      /ml
+        model.tflite            # exported disease classifier (from the training notebook)
+        leaf_gate.tflite         # exported binary leaf-gate classifier
+        labels.json              # class index → disease name + thresholds + accuracy
+    Dockerfile
+    requirements.txt
+    .env.example
+  /frontend
+    /src
+      /components
+        UploadForm.jsx
+        ResultCard.jsx
+        HistoryList.jsx
+      /api
+        client.js             # axios instance
+      App.jsx
+      main.jsx
+    vite.config.js
+    vercel.json
+    .env.example
+  /model-training
+    train_inception_v3.ipynb   # dataset → transfer learning → TFLite export notebook
+  render.yaml
+  README.md
+  .gitignore
+```
+
+## Model performance
+
+Filled in after running `model-training/train_inception_v3.ipynb` end-to-end — the notebook writes
+these same numbers into `backend/app/ml/labels.json` so the deployed thresholds always match what
+was actually measured on the held-out test set.
+
+| Model | Metric | Value |
+|---|---|---|
+| Disease classifier (Inception V3) | Test accuracy | _fill in after training_ |
+| Disease classifier | Confidence threshold | 0.65 (starting point — tune from the notebook's threshold sweep) |
+| Leaf gate (MobileNetV2) | Test accuracy | _fill in after training_ |
+| Leaf gate | Decision threshold | 0.5 |
+
+Confusion matrix: _paste the disease-classifier confusion matrix image from the notebook here after training._
+
+## Local development
+
+### Backend
 
 ```bash
-cd ai-service
+cd backend
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+cp .env.example .env   # then fill in real values
+uvicorn app.main:app --reload
 ```
 
-3. Make sure `ai-service/model.keras` exists.
+The API needs `backend/app/ml/model.tflite`, `leaf_gate.tflite`, and `labels.json` to exist — run
+the training notebook first (or copy in already-trained artifacts) or `/predict` will fail at
+inference time.
 
-If it does not, train it from `ai-service`:
+API docs (Swagger UI) are served at `http://localhost:8000/docs` once running.
 
-```bash
-uvicorn app:app --reload
-```
-
-and use the training workflow in `ai-service/app/train.py`.
-
-## Run
-
-Start everything from the root:
+### Frontend
 
 ```bash
-npm run dev
-```
-
-Start services individually:
-
-```bash
-npm run client
-npm run server
-npm run ai
-```
-
-Expected local ports:
-
-- Client: `5173`
-- Server: `5000`
-- AI service: `8000`
-
-If one of those ports is already taken, the service that owns it will move to the next free local port.
-
-## Service Commands
-
-Client:
-
-```bash
-cd client
+cd frontend
 npm install
+cp .env.example .env   # set VITE_API_URL=http://localhost:8000
 npm run dev
 ```
 
-Server:
+### Model training
 
-```bash
-cd server
-npm install
-npm run dev
+Open `model-training/train_inception_v3.ipynb` in Google Colab or Kaggle Notebooks (GPU runtime
+recommended). It downloads the dataset via `kagglehub`, trains both models, and writes
+`model.tflite`, `leaf_gate.tflite`, and `labels.json` directly into `backend/app/ml/` (adjust the
+output path at the top of the export cells if running somewhere the relative path doesn't resolve
+— e.g. download the three files and copy them into `backend/app/ml/` manually).
+
+## Environment variables
+
+### Backend (`backend/.env`, and as Render environment variables)
+
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB Atlas connection string |
+| `MONGO_DB_NAME` | Database name (defaults to `mango_leaf`) |
+| `IMAGEKIT_PUBLIC_KEY` | ImageKit public key |
+| `IMAGEKIT_PRIVATE_KEY` | ImageKit private key |
+| `IMAGEKIT_URL_ENDPOINT` | ImageKit URL endpoint |
+| `CORS_ORIGINS` | Comma-separated allowed origins (include your Vercel URL) |
+| `CONFIDENCE_THRESHOLD` | Fallback disease-classifier threshold (overridden by `labels.json` if present) |
+| `GATE_THRESHOLD` | Fallback leaf-gate threshold (overridden by `labels.json` if present) |
+
+### Frontend (`frontend/.env`, and as a Vercel environment variable)
+
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Base URL of the deployed FastAPI backend, e.g. `https://mango-leaf-backend.onrender.com` |
+
+## Deployment
+
+### Backend → Render
+
+`render.yaml` at the repo root defines a Docker web service pointing at `backend/Dockerfile`.
+In the Render dashboard: **New → Blueprint**, point it at this repo, and Render will pick up
+`render.yaml`. Fill in the `sync: false` environment variables (Mongo URI, ImageKit keys, CORS
+origins) in the Render dashboard — they're intentionally not stored in the repo.
+
+Health check: `GET /health`.
+
+### Frontend → Vercel
+
+Import the repo in Vercel, set the **root directory** to `frontend`, and set `VITE_API_URL` in
+Vercel's Project → Settings → Environment Variables to your Render backend's URL. `vercel.json`
+inside `frontend/` handles the SPA rewrite so client-side routing (if added later) doesn't 404 on
+refresh.
+
+### MongoDB Atlas
+
+Create a free cluster, add a database user, and allow network access from Render (either `0.0.0.0/0`
+for simplicity, or Render's specific outbound IPs if you want it locked down). The connection
+string format Atlas gives you:
+
+```
+mongodb+srv://<username>:<password>@<cluster-url>/?retryWrites=true&w=majority
 ```
 
-AI service:
+### ImageKit
 
-```bash
-cd ai-service
-pip install -r requirements.txt
-uvicorn app:app --reload
-```
+Create a free ImageKit account; the public key, private key, and URL endpoint are all on the
+dashboard's **Developer Options** page.
 
-## Notes
+## Accounts you need to create
 
-- The server uses the local MongoDB URI from `server/.env` by default and falls back to an in-memory database for local development if MongoDB is not available.
-- The client proxies API requests to the server during development.
-- The AI service loads `model.keras` from the AI service folder.
-
-## Docker
-
-To run with Docker Compose:
-
-````bash
-docker compose up --build
-```# Mango Leaf Disease Detection Using InceptionV3
-
-A production-ready full-stack MERN + AI application for mango leaf disease detection.
-
-## Stack
-
-- Frontend: React, Vite, Tailwind CSS, React Router, Axios
-- Backend: Node.js, Express.js, MongoDB, Mongoose, JWT, Multer, Express Validator, Helmet, CORS, Morgan, dotenv
-- AI Service: Python, FastAPI, TensorFlow, Keras, InceptionV3, OpenCV, Pillow, NumPy
-- Deployment: Docker, Docker Compose, environment-based configuration
-
-## Project Structure
-
-- `client` - React frontend
-- `server` - Express API and MongoDB integration
-- `ai-service` - FastAPI inference and training service
-
-## Features
-
-- Modern glassmorphism UI with dark/light theme support
-- Register, login, JWT auth, protected routes, profile updates
-- Leaf upload with preview, drag and drop, validation, and prediction
-- History with search, filter, delete, and PDF report download
-- Disease details pages and dashboard statistics
-- AI inference using InceptionV3 transfer learning
-
-## Quick Start
-
-1. Copy the sample environment files into real `.env` files in each service folder.
-2. Start MongoDB, then run the server, AI service, and client.
-3. Add the dataset under `ai-service/dataset/` using the expected class folders.
-
-## Docker
-
-Build and start everything with Docker Compose:
-
-```bash
-docker compose up --build
-````
-
-## Local Development
-
-### Server
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-### Client
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-### AI Service
-
-```bash
-cd ai-service
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-
-## Training
-
-Place images in the folder structure below and run `python -m app.train` from `ai-service`.
-
-```text
-dataset/
-  Healthy/
-  Anthracnose/
-  Die_Back/
-  Gall_Midge/
-  Leaf_Webber/
-  Leaf_Blight/
-```
-
-## Ports
-
-- Client: `3000` in Docker, `5173` in local Vite dev
-- Server: `5000`
-- AI service: `8000`
-- MongoDB: `27017`
-
-## Security
-
-- Password hashing with bcrypt
-- JWT authentication
-- Helmet, CORS, rate limiting, and input sanitization
-- Server-side validation and file type checks
-
-Repo relinked to Vercel on 2026-08-09 after recreating the GitHub repository.
+To fill in the environment variables above with real values:
+- **MongoDB Atlas** — free cluster → `MONGO_URI`
+- **ImageKit** — free account → `IMAGEKIT_PUBLIC_KEY`, `IMAGEKIT_PRIVATE_KEY`, `IMAGEKIT_URL_ENDPOINT`
+- **Render** — for backend hosting, where you'll paste the Mongo/ImageKit values as env vars
+- **Vercel** — for frontend hosting, where you'll set `VITE_API_URL`
+- **Kaggle** — to run the training notebook's dataset download (`kagglehub` will prompt for
+  credentials if not already configured in the notebook environment)
