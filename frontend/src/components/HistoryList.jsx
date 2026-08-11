@@ -14,7 +14,7 @@ function HistoryList({ refreshKey }) {
       setError(null)
       try {
         const { data } = await apiClient.get('/history', { params: { page: 1, page_size: 10 } })
-        if (!cancelled) setItems(data.items)
+        if (!cancelled) setItems(Array.isArray(data?.items) ? data.items : [])
       } catch {
         if (!cancelled) setError('Could not load history.')
       } finally {
