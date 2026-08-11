@@ -13,7 +13,7 @@ class PredictionOut(BaseModel):
 
 
 class PredictResponse(BaseModel):
-    status: str  # "ok" | "rejected"
+    status: str
     prediction: Optional[str] = None
     confidence: Optional[float] = None
     image_url: Optional[str] = None

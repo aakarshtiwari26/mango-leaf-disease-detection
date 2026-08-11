@@ -10,7 +10,7 @@ from app.routers import history, predict
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    get_client()  # establish the MongoDB connection pool at startup
+    get_client()
     yield
     await close_database()
 

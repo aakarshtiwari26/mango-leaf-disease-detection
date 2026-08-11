@@ -39,8 +39,6 @@
   padding: 1.25rem;
 }
 
-/* Upload form */
-
 .upload-form {
   display: flex;
   flex-direction: column;
@@ -99,8 +97,6 @@
   margin: 0;
 }
 
-/* Result card */
-
 .result-card {
   margin-top: 1.25rem;
   padding-top: 1.25rem;
@@ -130,8 +126,6 @@
   color: var(--color-danger);
   font-weight: 500;
 }
-
-/* History list */
 
 .history-list h2 {
   margin-top: 0;

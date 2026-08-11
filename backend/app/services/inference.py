@@ -16,9 +16,7 @@ from PIL import Image
 
 try:
     from tflite_runtime.interpreter import Interpreter
-except ImportError:  # fall back to full TensorFlow's interpreter for local dev
-    # `from tensorflow.lite import Interpreter` doesn't work — TF's lazy module
-    # loader only exposes Interpreter via the `tf.lite` attribute path.
+except ImportError:
     import tensorflow as _tf
 
     Interpreter = _tf.lite.Interpreter
@@ -34,7 +32,7 @@ NOT_A_LEAF_MESSAGE = "This doesn't look like a mango leaf — please upload a cl
 
 @dataclass
 class InferenceResult:
-    status: str  # "ok" | "rejected"
+    status: str
     prediction: Optional[str] = None
     confidence: Optional[float] = None
     message: Optional[str] = None
@@ -63,7 +61,7 @@ def _load_disease_interpreter() -> Interpreter:
 def _preprocess(image_bytes: bytes, size: tuple[int, int]) -> np.ndarray:
     image = Image.open(io.BytesIO(image_bytes)).convert("RGB").resize(size)
     array = np.asarray(image, dtype=np.float32)
-    array = (array / 127.5) - 1.0  # matches Inception/MobileNet preprocess_input scaling used in training
+    array = (array / 127.5) - 1.0
     return np.expand_dims(array, axis=0)
 
 

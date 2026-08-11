@@ -10,7 +10,7 @@ from app.services import imagekit_service, inference
 router = APIRouter()
 
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
-MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024  # 8 MB
+MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024
 
 
 @router.post("/predict", response_model=PredictResponse)

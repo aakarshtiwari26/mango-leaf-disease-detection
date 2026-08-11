@@ -3,12 +3,8 @@ uvicorn[standard]==0.30.1
 python-multipart==0.0.9
 pydantic-settings==2.3.4
 motor==3.5.1
-pymongo==4.7.3  # motor 3.5.1 depends on internal pymongo APIs removed in pymongo>=4.9
+pymongo==4.7.3
 imagekitio==3.2.0
 Pillow==10.4.0
 numpy==1.26.4
-# TFLite serving runtime — much smaller footprint than full tensorflow, which OOM'd
-# on Render's free tier. If tflite-runtime has no wheel for your platform/Python
-# version, swap this line for `tensorflow-cpu==2.15.0` (inference.py already falls
-# back to `tensorflow.lite.Interpreter` automatically).
 tflite-runtime==2.14.0
