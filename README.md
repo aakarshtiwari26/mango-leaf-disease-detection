@@ -143,9 +143,9 @@ npm run dev
 
 Open `model-training/train_inception_v3.ipynb` in Google Colab or Kaggle Notebooks (GPU runtime
 recommended). It downloads the dataset via `kagglehub`, trains both models, and writes
-`model.tflite`, `leaf_gate.tflite`, and `labels.json` directly into `backend/app/ml/` (adjust the
-output path at the top of the export cells if running somewhere the relative path doesn't resolve
-— e.g. download the three files and copy them into `backend/app/ml/` manually).
+`model.tflite`, `leaf_gate.tflite`, and `labels.json` into a local `mango_model_output/` folder in
+that notebook environment — download that folder's contents and copy the three files into
+`backend/app/ml/` in your local clone.
 
 ## Environment variables
 
