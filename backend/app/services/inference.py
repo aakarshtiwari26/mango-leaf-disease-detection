@@ -15,7 +15,7 @@ import numpy as np
 from PIL import Image
 
 try:
-    from tflite_runtime.interpreter import Interpreter
+    from ai_edge_litert.interpreter import Interpreter
 except ImportError:
     import tensorflow as _tf
 

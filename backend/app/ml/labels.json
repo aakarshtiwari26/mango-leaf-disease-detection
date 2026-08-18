@@ -1,0 +1,16 @@
+{
+  "labels": {
+    "0": "Anthracnose",
+    "1": "Bacterial Canker",
+    "2": "Cutting Weevil",
+    "3": "Die Back",
+    "4": "Gall Midge",
+    "5": "Healthy",
+    "6": "Powdery Mildew",
+    "7": "Sooty Mould"
+  },
+  "confidence_threshold": 0.65,
+  "gate_threshold": 0.5,
+  "gate_test_accuracy": 0.9991666666666666,
+  "disease_test_accuracy": 0.9966216216216216
+}
