@@ -1,20 +1,28 @@
 import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, File, HTTPException, Request, UploadFile, status
+from typing import Optional
+
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile, status
 
 from app.database import get_database
 from app.models.prediction import PredictResponse
-from app.services import device_info, imagekit_service, inference
+from app.services import device_info, geolocation, imagekit_service, inference
 
 router = APIRouter()
 
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024
+MAX_CLIENT_FIELD_LENGTH = 64
 
 
 @router.post("/predict", response_model=PredictResponse)
-async def predict(request: Request, file: UploadFile = File(...)) -> PredictResponse:
+async def predict(
+    request: Request,
+    file: UploadFile = File(...),
+    client_language: Optional[str] = Form(None),
+    client_timezone: Optional[str] = Form(None),
+) -> PredictResponse:
     if file.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
@@ -52,6 +60,7 @@ async def predict(request: Request, file: UploadFile = File(...)) -> PredictResp
 
     ip_address = device_info.get_client_ip(request)
     device = device_info.parse_device(request.headers.get("user-agent", ""))
+    location = await geolocation.lookup_location(ip_address)
 
     try:
         db = get_database()
@@ -63,6 +72,9 @@ async def predict(request: Request, file: UploadFile = File(...)) -> PredictResp
                 "created_at": datetime.now(timezone.utc),
                 "ip_address": ip_address,
                 "device": device,
+                "location": location,
+                "language": (client_language or "")[:MAX_CLIENT_FIELD_LENGTH] or None,
+                "timezone": (client_timezone or "")[:MAX_CLIENT_FIELD_LENGTH] or None,
             }
         )
     except Exception as exc:

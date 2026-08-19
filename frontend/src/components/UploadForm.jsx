@@ -48,6 +48,8 @@ function UploadForm({ onPredicted }) {
 
     const formData = new FormData()
     formData.append('file', file)
+    formData.append('client_language', navigator.language || '')
+    formData.append('client_timezone', Intl.DateTimeFormat().resolvedOptions().timeZone || '')
 
     setLoading(true)
     setError(null)

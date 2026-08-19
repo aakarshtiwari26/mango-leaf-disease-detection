@@ -9,7 +9,11 @@ def get_client() -> AsyncIOMotorClient:
     """Lazily create (and reuse) the Motor client / connection pool."""
     global _client
     if _client is None:
-        _client = AsyncIOMotorClient(get_settings().mongo_uri)
+        # tz_aware=True: without it, PyMongo hands back naive datetimes for
+        # UTC values, which then serialize without a timezone offset and get
+        # misread client-side as already-local time instead of needing
+        # conversion.
+        _client = AsyncIOMotorClient(get_settings().mongo_uri, tz_aware=True)
     return _client
 
 

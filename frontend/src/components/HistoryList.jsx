@@ -113,6 +113,12 @@ function HistoryList({ refreshKey }) {
                       {item.ip_address && <span>{item.ip_address}</span>}
                     </p>
                   )}
+                  {item.location && <p className="history-location">📍 {item.location}</p>}
+                  {(item.language || item.timezone) && (
+                    <p className="history-locale">
+                      {[item.language, item.timezone].filter(Boolean).join(' · ')}
+                    </p>
+                  )}
                 </div>
                 <span className={`history-status-dot ${isHealthy ? 'history-status-dot--healthy' : 'history-status-dot--warning'}`} />
               </li>

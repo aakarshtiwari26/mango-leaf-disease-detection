@@ -12,6 +12,9 @@ class PredictionOut(BaseModel):
     created_at: datetime
     ip_address: Optional[str] = None
     device: Optional[str] = None
+    location: Optional[str] = None
+    language: Optional[str] = None
+    timezone: Optional[str] = None
 
 
 class PredictResponse(BaseModel):

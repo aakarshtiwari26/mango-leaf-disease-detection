@@ -33,6 +33,9 @@ async def get_history(
             created_at=doc["created_at"],
             ip_address=doc.get("ip_address"),
             device=doc.get("device"),
+            location=doc.get("location"),
+            language=doc.get("language"),
+            timezone=doc.get("timezone"),
         )
         for doc in documents
     ]
