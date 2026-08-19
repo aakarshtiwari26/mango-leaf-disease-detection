@@ -2,14 +2,35 @@
   color-scheme: light;
   --color-bg: #f6f8f4;
   --color-surface: #ffffff;
+  --color-surface-muted: #f0f4ec;
   --color-border: #e2e8dd;
   --color-primary: #3f7d3f;
   --color-primary-dark: #2f5f2f;
+  --color-primary-soft: #e7f3e4;
   --color-text: #1f2a1f;
   --color-text-muted: #5c6b5c;
   --color-danger: #b3261e;
   --color-danger-bg: #fdecea;
+  --shadow-sm: 0 1px 2px rgba(20, 30, 20, 0.06);
+  --shadow-md: 0 8px 24px rgba(20, 30, 20, 0.08);
   font-family: -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-bg: #131813;
+  --color-surface: #1c231c;
+  --color-surface-muted: #232b23;
+  --color-border: #2e372e;
+  --color-primary: #5da85d;
+  --color-primary-dark: #4a8f4a;
+  --color-primary-soft: #23331f;
+  --color-text: #eaf0e6;
+  --color-text-muted: #9fb09a;
+  --color-danger: #ff6b63;
+  --color-danger-bg: #3a1f1e;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -20,6 +41,7 @@ body {
   margin: 0;
   background: var(--color-bg);
   color: var(--color-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button {
