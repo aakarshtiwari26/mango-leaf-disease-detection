@@ -10,6 +10,8 @@ class PredictionOut(BaseModel):
     prediction: str
     confidence: float
     created_at: datetime
+    ip_address: Optional[str] = None
+    device: Optional[str] = None
 
 
 class PredictResponse(BaseModel):

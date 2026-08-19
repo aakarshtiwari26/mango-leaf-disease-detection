@@ -1,19 +1,27 @@
 import { useCallback, useEffect, useState } from 'react'
 import apiClient from '../api/client.js'
 import { getDiseaseInfo } from '../data/diseaseInfo.js'
+import { formatISTDateTime } from '../utils/formatDate.js'
+
+const PAGE_SIZE = 10
 
 function HistoryList({ refreshKey }) {
   const [items, setItems] = useState([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [manualRefresh, setManualRefresh] = useState(0)
 
-  const loadHistory = useCallback(async () => {
+  const loadHistory = useCallback(async (targetPage) => {
     setLoading(true)
     setError(null)
     try {
-      const { data } = await apiClient.get('/history', { params: { page: 1, page_size: 10 } })
+      const { data } = await apiClient.get('/history', {
+        params: { page: targetPage, page_size: PAGE_SIZE },
+      })
       setItems(Array.isArray(data?.items) ? data.items : [])
+      setTotal(Number.isFinite(data?.total) ? data.total : 0)
     } catch {
       setError('Could not load history.')
     } finally {
@@ -22,17 +30,16 @@ function HistoryList({ refreshKey }) {
   }, [])
 
   useEffect(() => {
-    let cancelled = false
-    loadHistory().then(() => {
-      if (cancelled) return
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [refreshKey, manualRefresh, loadHistory])
+    setPage(1)
+  }, [refreshKey])
+
+  useEffect(() => {
+    loadHistory(page)
+  }, [page, refreshKey, manualRefresh, loadHistory])
 
   const healthyCount = items.filter((i) => i.prediction === 'Healthy').length
   const diseasedCount = items.length - healthyCount
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
     <div className="history-list">
@@ -52,7 +59,7 @@ function HistoryList({ refreshKey }) {
       {items.length > 0 && (
         <div className="history-stats">
           <div className="stat-pill stat-pill--total">
-            <span className="stat-value">{items.length}</span>
+            <span className="stat-value">{total}</span>
             <span className="stat-label">Total</span>
           </div>
           <div className="stat-pill stat-pill--healthy">
@@ -97,14 +104,43 @@ function HistoryList({ refreshKey }) {
                     {item.prediction.replaceAll('_', ' ')}
                   </p>
                   <p className="history-meta">
-                    {(item.confidence * 100).toFixed(1)}% · {new Date(item.created_at).toLocaleString()}
+                    {(item.confidence * 100).toFixed(1)}% · {formatISTDateTime(item.created_at)}
                   </p>
+                  {(item.device || item.ip_address) && (
+                    <p className="history-device">
+                      {item.device && <span>{item.device}</span>}
+                      {item.device && item.ip_address && ' · '}
+                      {item.ip_address && <span>{item.ip_address}</span>}
+                    </p>
+                  )}
                 </div>
                 <span className={`history-status-dot ${isHealthy ? 'history-status-dot--healthy' : 'history-status-dot--warning'}`} />
               </li>
             )
           })}
         </ul>
+      )}
+
+      {total > PAGE_SIZE && (
+        <div className="history-pagination">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={loading || page <= 1}
+          >
+            ← Prev
+          </button>
+          <span className="history-pagination-label">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={loading || page >= totalPages}
+          >
+            Next →
+          </button>
+        </div>
       )}
     </div>
   )

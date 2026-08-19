@@ -449,6 +449,52 @@
   color: var(--color-text-muted);
 }
 
+.history-device {
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  opacity: 0.8;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.history-pagination button {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.82rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.history-pagination button:hover:not(:disabled) {
+  background: var(--color-primary-soft);
+}
+
+.history-pagination button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.history-pagination-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
 .history-status-dot {
   width: 9px;
   height: 9px;

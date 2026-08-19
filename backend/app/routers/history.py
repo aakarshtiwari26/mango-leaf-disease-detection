@@ -31,6 +31,8 @@ async def get_history(
             prediction=doc["prediction"],
             confidence=doc["confidence"],
             created_at=doc["created_at"],
+            ip_address=doc.get("ip_address"),
+            device=doc.get("device"),
         )
         for doc in documents
     ]
